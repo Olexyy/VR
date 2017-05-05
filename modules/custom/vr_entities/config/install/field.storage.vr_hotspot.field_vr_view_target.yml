@@ -1,0 +1,18 @@
+langcode: en
+status: true
+dependencies:
+  module:
+    - eck
+id: vr_hotspot.field_vr_view_target
+field_name: field_vr_view_target
+entity_type: vr_hotspot
+type: entity_reference
+settings:
+  target_type: vr_view
+module: core
+locked: false
+cardinality: 1
+translatable: true
+indexes: {  }
+persist_with_no_fields: false
+custom_storage: false

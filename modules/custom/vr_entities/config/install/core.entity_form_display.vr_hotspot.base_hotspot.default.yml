@@ -1,0 +1,76 @@
+langcode: en
+status: true
+dependencies:
+  config:
+    - eck.eck_type.vr_hotspot.base_hotspot
+    - field.field.vr_hotspot.base_hotspot.field_distance
+    - field.field.vr_hotspot.base_hotspot.field_pitch
+    - field.field.vr_hotspot.base_hotspot.field_radius
+    - field.field.vr_hotspot.base_hotspot.field_vr_view_target
+    - field.field.vr_hotspot.base_hotspot.field_yaw
+id: vr_hotspot.base_hotspot.default
+targetEntityType: vr_hotspot
+bundle: base_hotspot
+mode: default
+content:
+  created:
+    type: datetime_timestamp
+    weight: 10
+    region: content
+    settings: {  }
+    third_party_settings: {  }
+  field_distance:
+    weight: 14
+    settings:
+      placeholder: ''
+    third_party_settings: {  }
+    type: number
+    region: content
+  field_pitch:
+    weight: 11
+    settings:
+      placeholder: ''
+    third_party_settings: {  }
+    type: number
+    region: content
+  field_radius:
+    weight: 13
+    settings:
+      placeholder: ''
+    third_party_settings: {  }
+    type: number
+    region: content
+  field_vr_view_target:
+    weight: 15
+    settings:
+      match_operator: CONTAINS
+      size: 60
+      placeholder: ''
+    third_party_settings: {  }
+    type: entity_reference_autocomplete
+    region: content
+  field_yaw:
+    weight: 12
+    settings:
+      placeholder: ''
+    third_party_settings: {  }
+    type: number
+    region: content
+  title:
+    type: string_textfield
+    weight: -5
+    region: content
+    settings:
+      size: 60
+      placeholder: ''
+    third_party_settings: {  }
+  uid:
+    type: entity_reference_autocomplete
+    weight: 5
+    settings:
+      match_operator: CONTAINS
+      size: 60
+      placeholder: ''
+    region: content
+    third_party_settings: {  }
+hidden: {  }

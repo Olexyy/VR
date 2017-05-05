@@ -1,0 +1,13 @@
+name: 'VR Entities'
+description: 'VR Entities and Fields.'
+type: module
+core: 8.x
+dependencies:
+  - eck
+  - features
+  - field
+  - file
+  - image
+  - user
+version: 8.x-1.0
+package: VR

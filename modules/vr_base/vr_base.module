@@ -1,0 +1,9 @@
+<?php
+
+/**
+ * Implements hook_page_attachments().
+ */
+function vr_base_page_attachments(array &$attachments) {
+  $attachments['#attached']['library'][] = 'vr_base/vr_library';
+  //$attachments['#attached']['library'][] = 'vr_base/vr_example';
+}

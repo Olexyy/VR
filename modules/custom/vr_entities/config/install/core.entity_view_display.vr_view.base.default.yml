@@ -1,0 +1,71 @@
+langcode: en
+status: true
+dependencies:
+  config:
+    - eck.eck_type.vr_view.base
+    - field.field.vr_view.base.field_image
+    - field.field.vr_view.base.field_is_stereo
+    - field.field.vr_view.base.field_vr_hotspots
+    - image.style.thumbnail
+  module:
+    - image
+    - user
+id: vr_view.base.default
+targetEntityType: vr_view
+bundle: base
+mode: default
+content:
+  created:
+    label: hidden
+    type: timestamp
+    weight: 0
+    region: content
+    settings:
+      date_format: medium
+      custom_date_format: ''
+      timezone: ''
+    third_party_settings: {  }
+  field_image:
+    weight: 1
+    label: above
+    settings:
+      image_style: thumbnail
+      image_link: ''
+    third_party_settings: {  }
+    type: image
+    region: content
+  field_is_stereo:
+    weight: 2
+    label: above
+    settings:
+      format: default
+      format_custom_false: ''
+      format_custom_true: ''
+    third_party_settings: {  }
+    type: boolean
+    region: content
+  field_vr_hotspots:
+    weight: 3
+    label: above
+    settings:
+      link: true
+    third_party_settings: {  }
+    type: entity_reference_label
+    region: content
+  title:
+    label: above
+    type: string
+    weight: -5
+    region: content
+    settings:
+      link_to_entity: false
+    third_party_settings: {  }
+  uid:
+    label: hidden
+    type: author
+    weight: 0
+    region: content
+    settings: {  }
+    third_party_settings: {  }
+hidden:
+  changed: true

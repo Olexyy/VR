@@ -1,0 +1,22 @@
+langcode: en
+status: true
+dependencies:
+  config:
+    - eck.eck_type.vr_hotspot.base_hotspot
+    - field.storage.vr_hotspot.field_distance
+id: vr_hotspot.base_hotspot.field_distance
+field_name: field_distance
+entity_type: vr_hotspot
+bundle: base_hotspot
+label: Distance
+description: 'Distance of target from camera in meters.'
+required: false
+translatable: false
+default_value: {  }
+default_value_callback: ''
+settings:
+  min: null
+  max: null
+  prefix: ''
+  suffix: ''
+field_type: float

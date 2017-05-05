@@ -1,0 +1,9 @@
+langcode: en
+status: true
+dependencies: {  }
+id: vr_hotspot
+label: 'VR Hotspot'
+created: true
+changed: true
+uid: true
+title: true

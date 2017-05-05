@@ -1,0 +1,22 @@
+langcode: en
+status: true
+dependencies:
+  config:
+    - eck.eck_type.vr_hotspot.base_hotspot
+    - field.storage.vr_hotspot.field_yaw
+id: vr_hotspot.base_hotspot.field_yaw
+field_name: field_yaw
+entity_type: vr_hotspot
+bundle: base_hotspot
+label: Yaw
+description: 'In degrees. To the right is positive.'
+required: false
+translatable: false
+default_value: {  }
+default_value_callback: ''
+settings:
+  min: null
+  max: null
+  prefix: ''
+  suffix: ''
+field_type: float

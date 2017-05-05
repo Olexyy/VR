@@ -1,0 +1,18 @@
+vr_example:
+    version: 1.x
+    js:
+      js/index.js: {preprocess: false}
+vr_library:
+    version: 1.x
+    css:
+        layout:
+            vr_library/vr_style.css: {}
+    js:
+        vr_library/build/vrview.js:  {preprocess: false}
+        vr_library/build/embed.js:  {preprocess: false}
+        vr_library/build/tree.js:  {preprocess: false}
+        vr_library/src/util.js:  {preprocess: false}
+        vr_library/src/message.js:  {preprocess: false}
+        vr_library/src/api/iframe-message-sender.js:  {preprocess: false}
+        vr_library/src/api/main.js:  {preprocess: false}
+        vr_library/src/api/player.js: {preprocess: false}

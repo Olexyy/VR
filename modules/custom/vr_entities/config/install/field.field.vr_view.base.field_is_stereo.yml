@@ -1,0 +1,22 @@
+langcode: en
+status: true
+dependencies:
+  config:
+    - eck.eck_type.vr_view.base
+    - field.storage.vr_view.field_is_stereo
+id: vr_view.base.field_is_stereo
+field_name: field_is_stereo
+entity_type: vr_view
+bundle: base
+label: 'Is Stereo'
+description: 'Defines whether image is stereo.'
+required: false
+translatable: false
+default_value:
+  -
+    value: 0
+default_value_callback: ''
+settings:
+  on_label: 'On'
+  off_label: 'Off'
+field_type: boolean

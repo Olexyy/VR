@@ -1,0 +1,11 @@
+name: VR Base
+type: module
+description: 'Basic VR implementation.'
+package: VR
+
+dependencies:
+  - field
+  - block
+  
+version: '8.3.1'
+core: '8.x'

@@ -1,0 +1,48 @@
+mdl:
+  css:
+    theme:
+      //storage.googleapis.com/code.getmdl.io/VERSION/material.PRIMARY-ACCENT.min.css: { type: external }
+  js:
+      //storage.googleapis.com/code.getmdl.io/VERSION/material.min.js: { type: external }
+  dependencies:
+    - mdl/materialIcons
+    - mdl/roboto
+
+mdl.selectfield:
+  css:
+    component:
+      /libraries/mdl-selectfield/mdl-selectfield.min.css: {}
+  js:
+    /libraries/mdl-selectfield/mdl-selectfield.min.js: {}
+
+mdl.searchblock:
+  css:
+    component:
+      css/header.block--search.css: {}
+
+mdl.breadcrumb:
+  css:
+    component:
+      css/breadcrumb.css: {}
+
+materialIcons:
+  css:
+    theme:
+      //fonts.googleapis.com/icon?family=Material+Icons: { type: external }
+roboto:
+  css:
+    theme:
+      //fonts.googleapis.com/css?family=Roboto:300,400,500,700: { type: external }
+mdltheme:
+  css:
+    theme:
+      style.css: {}
+  js:
+    script.js: {}
+  dependencies:
+    - mdl/mdl
+
+waterfall-panels:
+  css:
+    theme:
+      css/waterfall-panels.css: {}
