@@ -1,0 +1,14 @@
+hotspots.form:
+  path: '/hotspots/{vr_view}/{yaw}/{pitch}'
+  defaults:
+    _title: 'Hotspots'
+    _form: '\Drupal\vr_base\Form\HotSpotsForm'
+  requirements:
+    _permission: 'access content'
+hotspot.modal:
+  path: '/hotspot/{vr_view}/{yaw}/{pitch}'
+  defaults:
+    _title: 'Hotspot'
+    _controller: '\Drupal\vr_base\Controller\ModalFormHotSpotController::createHotSpotModalForm'
+  requirements:
+    _permission: 'access content'
