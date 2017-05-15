@@ -2,8 +2,10 @@
 
 namespace Drupal\vr_base\Plugin\Field\FieldFormatter;
 
+use Drupal\Core\Entity\EntityInterface;
 use Drupal\Core\Field\FormatterBase;
 use Drupal\Core\Field\FieldItemListInterface;
+use Drupal\eck\Entity\EckEntity;
 use Drupal\file\Entity\File;
 
 /**
@@ -23,11 +25,9 @@ class VRViewFormatter extends FormatterBase {
    * {@inheritdoc}
    */
   public function settingsSummary() {
-    $summary = array();
+    $summary = [];
     $settings = $this->getSettings();
-
-    $summary[] = t('Displays the VR view image.');
-
+    $summary[] = $this->t('Displays the VR view image.');
     return $summary;
   }
 
@@ -36,19 +36,9 @@ class VRViewFormatter extends FormatterBase {
    */
   public function viewElements(FieldItemListInterface $items, $langcode) {
     $element = [];
-    $a = 1;
     foreach ($items as $delta => $item) {
       $entity = $item->getEntity();
-      $is_stereo = $entity->field_is_stereo->value;
-      $value = $item->getValue();
-      $file_uri = File::load($value['target_id'])->getFileUri();
-      $image_uri = file_create_url($file_uri);
-      $start_image = file_create_url('public://pics/blank.png');
-      $js_settings = [
-        'start_image' => $start_image,
-        'source' => $image_uri,
-        'is_stereo' => $is_stereo,
-      ];
+      $js_settings = $this->jsSettings($entity);
       $element[$delta]['widget'] = [
         '#type' => 'item',
         '#title' => '<div id="vrview"></div>
@@ -77,8 +67,58 @@ class VRViewFormatter extends FormatterBase {
         ],
       ];
     }
-
     return $element;
   }
 
+  // TODO 1) TEST implementation; 2)MERGE 'LINK' RENERABLE!!! 3) register own theme element!!!
+  private function jsSettings(EntityInterface $entity) {
+    $start_image_uri = file_create_url('public://pics/blank.png');
+    $vr_view_name = $entity->title->value.'_'.$entity->id->value;
+    $js_settings = [
+      'start_image' => $start_image_uri,
+      'start_view' => $vr_view_name,
+      'views' => [],
+    ];
+    $this->vrViewToJsSettings($entity, $js_settings);
+    $hotspots = $entity->field_vr_hotspots->referencedEntities();
+    foreach ($hotspots as $hotspot) {
+      if($vr_view = $hotspot->field_vr_view_target->entity) {
+        $this->vrViewToJsSettings($vr_view, $js_settings);
+      }
+    }
+    return $js_settings;
+  }
+
+  private function vrViewToJsSettings(EntityInterface $entity, array &$js_settings) {
+    $vr_view_name = $entity->title->value.'_'.$entity->id->value;
+    $is_stereo = $entity->field_is_stereo->value;
+    $file = $entity->field_image->entity;
+    $image_uri = file_create_url($file->getFileUri());
+    $js_settings['views'][$vr_view_name] = [
+      'source' => $image_uri,
+      'is_stereo' => $is_stereo,
+      'hotspots' => $this->hotspotsToJsSettings($entity),
+    ];
+  }
+
+  private function hotspotsToJsSettings(EntityInterface $entity) {
+    $hotspot_settings = [];
+    $hotspots = $entity->field_vr_hotspots->referencedEntities();
+    foreach ($hotspots as $hotspot) {
+      if($vr_view = $hotspot->field_vr_view_target->entity) {
+        $vr_view_name = $vr_view->title->value.'_'.$vr_view->id->value;
+        $yaw = $hotspot->field_yaw->value;
+        $pitch = $hotspot->field_pitch->value;
+        $radius = $hotspot->field_radius->value;
+        $distance = $hotspot->field_distance->value;
+        $hotspot_settings[$vr_view_name] = [
+          'pitch' => $pitch,
+          'yaw' => $yaw,
+          'radius' => $radius,
+          'distance' => $distance,
+        ];
+      }
+    }
+    return $hotspot_settings;
+  }
 }

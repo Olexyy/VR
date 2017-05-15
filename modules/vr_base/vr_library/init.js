@@ -13,13 +13,12 @@
  * limitations under the License.
  */
 var vrView;
+var startView;
 var startImage;
-var imagePath;
-var isStereo;
-var hotSpots;
 var hotSpotsLink;
 var baseHotSpotsLink;
 var initialHotSpotsLink;
+
 // All the scenes for the experience
 /*var scenes = {
   first: {
@@ -30,40 +29,57 @@ var initialHotSpotsLink;
 
 function setSourceParams() {
     startImage = drupalSettings.vr_base.start_image;
-    imagePath = drupalSettings.vr_base.source;
-    isStereo = drupalSettings.vr_base.is_stereo;
+    startView = drupalSettings.vr_base.start_view;
+    views = drupalSettings.vr_base;
+    //imagePath = drupalSettings.vr_base.source;
+    //isStereo = drupalSettings.vr_base.is_stereo;
     //hotSpots = drupalSettings.vr_base.hot_spots;
-    hotSpots = {
+    /*hotSpots = {
         hotspot: {
             pitch: 0,
             yaw: 10,
             radius: 0.05,
             distance: 1
         }
-    };
+    };*/
     initialHotSpotsLink = document.getElementById('modal-button').getAttribute('href');
     baseHotSpotsLink = initialHotSpotsLink.replace('/0/0', '');
 }
 
 function onLoad() {
-  setSourceParams();
-  vrView = new VRView.Player('#vrview', {
+    setSourceParams();
+    vrView = new VRView.Player('#vrview', {
     width: '100%',
     height: 480,
     image: startImage,
     preview: startImage,
     is_stereo: false,
     is_autopan_off: true
-  });
-  vrView.on('ready', loadScene);
-  vrView.on('modechange', onModeChange);
-  vrView.on('error', onVRViewError);
-  vrView.on('click', onVRViewClick);
-  vrView.on('getposition', onVRViewPosition);
+    });
+    vrView.on('ready', onVRViewReady);
+    vrView.on('modechange', onModeChange);
+    vrView.on('error', onVRViewError);
+    vrView.on('click', onVRViewClick);
+    vrView.on('getposition', onVRViewPosition);
 }
 
-function loadScene() {
-    console.log('loadScene', 'load scene');
+function onVRViewReady(e) {
+    console.log('onVRViewReady');
+    loadScene(startView);
+}
+
+function onVRViewClick(e) {
+    console.log('onVRViewClick', e.id);
+    if (e.id) {
+        loadScene(e.id);
+    }
+    else {
+        vrView.getPosition();
+    }
+}
+
+function loadScene(id) {
+    console.log('loadScene', id);
     vrView.setContent({
         image: imagePath,
         preview: imagePath,
@@ -84,11 +100,6 @@ function loadScene() {
     }
 }
 
-function onVRViewClick(e) {
-	vrView.getPosition();
-	console.log('clicked:');
-}
-
 function onVRViewPosition(e) {
 	var pitch = e.Pitch;
 	var yaw = e.Yaw;
@@ -104,30 +115,28 @@ function onVRViewPosition(e) {
     }
 }
 
-function onVRViewReady(e) {
-  console.log('onVRViewReady');
+function onVRViewReady1(e) {
+    console.log('onVRViewReady');
+    // Create the carousel links
+    var carouselItems = document.querySelectorAll('ul.carousel li a');
+    for (var i = 0; i < carouselItems.length; i++) {
+        var item = carouselItems[i];
+        item.disabled = false;
 
-  // Create the carousel links
-  var carouselItems = document.querySelectorAll('ul.carousel li a');
-  for (var i = 0; i < carouselItems.length; i++) {
-    var item = carouselItems[i];
-    item.disabled = false;
-
-    item.addEventListener('click', function(event) {
-      event.preventDefault();
-      loadScene(event.target.parentNode.getAttribute('href').substring(1));
-    });
-  }
-
-  loadScene('petra');
+        item.addEventListener('click', function(event) {
+          event.preventDefault();
+          loadScene(event.target.parentNode.getAttribute('href').substring(1));
+        });
+    }
+    loadScene('petra');
 }
 
 function onModeChange(e) {
-  console.log('onModeChange', e.mode);
+    console.log('onModeChange', e.mode);
 }
 
 function onVRViewError(e) {
-  console.log('Error! %s', e.message);
+    console.log('Error! %s', e.message);
 }
 
 window.addEventListener('load', onLoad);

@@ -2,11 +2,17 @@
 
 namespace Drupal\vr_base\Controller;
 
-use Symfony\Component\DependencyInjection\ContainerInterface;
+use Drupal\Core\Entity\EntityFormBuilder;
+use Drupal\Core\Entity\EntityTypeManager;
+use Drupal\vr_base\VrBase;
+use Drupal\Core\Ajax\CloseDialogCommand;
+use Drupal\Core\Ajax\HtmlCommand;
 use Drupal\Core\Ajax\AjaxResponse;
 use Drupal\Core\Ajax\OpenModalDialogCommand;
+use Drupal\Core\Ajax\RedirectCommand;
+use Symfony\Component\DependencyInjection\ContainerInterface;
 use Drupal\Core\Controller\ControllerBase;
-use Drupal\Core\Form\FormBuilder;
+use Drupal\Core\Form\FormStateInterface;
 
 /**
  * ModalFormExampleController class.
@@ -14,18 +20,25 @@ use Drupal\Core\Form\FormBuilder;
 class ModalFormHotSpotController extends ControllerBase {
 
    /**
-    * The form builder.
-    * @var \Drupal\Core\Form\FormBuilder
+    * Entity form builder.
+    * @var \Drupal\Core\Entity\EntityFormBuilder
     */
-   protected $formBuilder;
+   protected $entityFormBuilder;
+
+  /**
+   * Entity type manager.
+   * @var \Drupal\Core\Entity\EntityTypeManager
+   */
+   protected $entityTypeManager;
 
    /**
-    * The ModalFormExampleController constructor.
-    * @param \Drupal\Core\Form\FormBuilder $formBuilder
-    * The form builder.
+    * ModalFormHotSpotController constructor.
+    * @param \Drupal\Core\Entity\EntityTypeManager $entity_type_manager
+    * @param \Drupal\Core\Entity\EntityFormBuilder $entity_form_builder
     */
-   public function __construct(FormBuilder $formBuilder) {
-     $this->formBuilder = $formBuilder;
+   public function __construct(EntityTypeManager $entity_type_manager, EntityFormBuilder $entity_form_builder) {
+     $this->entityTypeManager = $entity_type_manager;
+     $this->entityFormBuilder = $entity_form_builder;
    }
 
    /**
@@ -35,28 +48,53 @@ class ModalFormHotSpotController extends ControllerBase {
     * @return static
     */
    public static function create(ContainerInterface $container) {
-     return new static($container->get('form_builder'));
+     return new static($container->get('entity_type.manager'), $container->get('entity.form_builder'));
    }
 
    /**
+    * Initial ajax callback for hotspot form.
     * @param $vr_view
     * @param $yaw
     * @param $pitch
     * @return AjaxResponse
-    * Callback for opening the modal form.
     * See more at: https://www.mediacurrent.com/blog/loading-and-rendering-modal-forms-drupal-8#sthash.a1xRiRVP.dpuf
     */
-   public function createHotSpotModalForm($vr_view, $yaw, $pitch) {
-     $response = new AjaxResponse();
-     // Get the modal form using the form builder.
-     //$modal_form = $this->formBuilder->getForm('Drupal\modal_form_example\Form\ModalForm');
-     //$this->entityFormBuilder()->getForm($entity);
-     $entityStorage = \Drupal::service('entity.manager')->getStorage('vr_hotspot');
-     $entity = $entityStorage->create(['type' => 'base_hotspot']);
-     $additions = [ 'vr_view' => $vr_view, 'yaw' => $yaw, 'pitch' => $pitch ];
-     $modal_form = \Drupal::service('entity.form_builder')->getForm($entity, $operation = 'default', $additions);
-     // Add an AJAX command to open a modal dialog with the form as the content.
-     $response->addCommand(new OpenModalDialogCommand('My Modal Form', $modal_form, ['width' => '800']));
-     return $response;
-   }
+  public function createHotSpotModalForm($vr_view, $yaw, $pitch) {
+    $response = new AjaxResponse();
+    $entityStorage = $this->entityTypeManager->getStorage(VrBase::entityTypeVRHotspot);
+    $entity = $entityStorage->create([ 'type' => VrBase::entityBundleBaseVRHotspot ]);
+    $additions = [ 'vr_view' => $vr_view, 'yaw' => $yaw, 'pitch' => $pitch, 'ajax' => TRUE ];
+    $modal_form = $this->entityFormBuilder->getForm($entity, $operation = 'default', $additions);
+    $response->addCommand(new OpenModalDialogCommand('New hotspot', $modal_form, [ 'width' => '800' ]));
+    return $response;
+  }
+
+  /**
+   * Ajax processing callback for hotspot form.
+   * @param array $form
+   * @param FormStateInterface $form_state
+   * @return AjaxResponse
+   */
+  public function formAjaxCallback(array &$form, FormStateInterface $form_state) {
+    $response = new AjaxResponse();
+    if ($form_state->getErrors()) {
+      unset($form['#prefix']);
+      unset($form['#suffix']);
+      $form['status_messages'] = [
+        '#type' => 'status_messages',
+        '#weight' => -10,
+      ];
+      $response->addCommand(new HtmlCommand('#'.VrBase::formWrapper, $form));
+    }
+    else {
+      $storage = $this->entityTypeManager->getStorage('vr_view');
+      $parent_entity = $storage->load($form_state->get(VrBase::EntityTypeVRView));
+      $id = $form_state->getFormObject()->getEntity()->id->value;
+      $parent_entity->field_vr_hotspots[] = $id;
+      $parent_entity->save();
+      $http_referrer = \Drupal::request()->server->get('HTTP_REFERER');
+      $response->addCommand(new RedirectCommand($http_referrer));
+    }
+    return $response;
+  }
 }

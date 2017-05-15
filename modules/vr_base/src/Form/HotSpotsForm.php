@@ -21,7 +21,6 @@ class HotSpotsForm extends FormBase {
    * {@inheritdoc}
    */
   public function buildForm(array $form, FormStateInterface $form_state, $vr_view = '', $yaw = '', $pitch = '') {
-    $a = 1;
     $storage = \Drupal::service('entity.manager')->getStorage('vr_view');
     $entity = $storage->load($vr_view);
     $form_state->set('vr_view', $entity);
