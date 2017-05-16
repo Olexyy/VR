@@ -18,6 +18,7 @@ var startImage;
 var hotSpotsLink;
 var baseHotSpotsLink;
 var initialHotSpotsLink;
+var views;
 
 // All the scenes for the experience
 /*var scenes = {
@@ -30,7 +31,7 @@ var initialHotSpotsLink;
 function setSourceParams() {
     startImage = drupalSettings.vr_base.start_image;
     startView = drupalSettings.vr_base.start_view;
-    views = drupalSettings.vr_base;
+    views = drupalSettings.vr_base.views;
     //imagePath = drupalSettings.vr_base.source;
     //isStereo = drupalSettings.vr_base.is_stereo;
     //hotSpots = drupalSettings.vr_base.hot_spots;
@@ -81,21 +82,19 @@ function onVRViewClick(e) {
 function loadScene(id) {
     console.log('loadScene', id);
     vrView.setContent({
-        image: imagePath,
-        preview: imagePath,
-        is_stereo: isStereo,
+        image: views[id]['source'],
+        preview: views[id]['source'],
+        is_stereo: views[id]['is_stereo'],
         is_autopan_off: true
     });
     // Add all the hotspots for the scene
-    var sceneHotSpots = Object.keys(hotSpots);
-    for (var i = 0; i < sceneHotSpots.length; i++) {
-        var hotSpotKey = sceneHotSpots[i];
-        var hotSpot = hotSpots[hotSpotKey];
+    var sceneHotSpots = views[id]['hotspots'];
+    for (var hotSpotKey in sceneHotSpots) {
         vrView.addHotspot(hotSpotKey, {
-            pitch: hotSpot.pitch,
-            yaw: hotSpot.yaw,
-            radius: hotSpot.radius,
-            distance: hotSpot.distance
+            pitch: sceneHotSpots[hotSpotKey]['pitch'],
+            yaw: sceneHotSpots[hotSpotKey]['yaw'],
+            radius: sceneHotSpots[hotSpotKey]['radius'],
+            distance: sceneHotSpots[hotSpotKey]['distance']
         });
     }
 }
