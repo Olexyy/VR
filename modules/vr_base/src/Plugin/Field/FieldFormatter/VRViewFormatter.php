@@ -5,6 +5,8 @@ namespace Drupal\vr_base\Plugin\Field\FieldFormatter;
 use Drupal\Core\Entity\EntityInterface;
 use Drupal\Core\Field\FormatterBase;
 use Drupal\Core\Field\FieldItemListInterface;
+use Drupal\Core\Link;
+use Drupal\Core\Url;
 use Drupal\eck\Entity\EckEntity;
 use Drupal\file\Entity\File;
 
@@ -39,32 +41,21 @@ class VRViewFormatter extends FormatterBase {
     foreach ($items as $delta => $item) {
       $entity = $item->getEntity();
       $js_settings = $this->jsSettings($entity);
+
       $element[$delta]['widget'] = [
         '#type' => 'item',
         '#title' => '<div id="vrview"></div>
                     <div class="vrview-position position">
-                        <div class="position-title">Yaw: </div>
-                        <div class="position-yaw value" id="yaw-value">0</div>
-                        <div class="position-title">Pitch: </div>
-                        <div class="position-pitch value" id="pitch-value">0</div>
+                        <div class="position-title">Yaw: <span class="position-yaw value" id="yaw-value">0</span></div>
+                        <div class="position-title">Pitch: <span class="position-pitch value" id="pitch-value">0</span></div>
                     </div>
-                    <a id="modal-button" class="use-ajax" data-dialog-type="modal" href="/hotspot/'.$entity->id->value.'/0/0">'.t('Hot spots').'</a>',
+                    <a id="modal-button-create" class="use-ajax" href="/hotspot/create/'.$entity->id->value.'/0/0">'.t('Add new').'</a>'
+                    .$this->hotspotsLinks($entity),
         '#attached' => [
-          'library' => [ 'vr_base/vr_library' ],
+          'library' => [ 'vr_base/vr_library', 'core/drupal.dialog.ajax' ],
           'drupalSettings' => [ 'vr_base' => $js_settings ],
         ],
-        '#description' => 'Hello kitty!',
-      ];
-      $element[$delta]['link'] = [
-        '#type' => 'link',
-        '#title' => 'Open Modal',
-        '#url' => "/hotspot/{$entity->id->value}/0/0",
-        '#attributes' => [
-          'class' => [ 'use-ajax', 'button', ],
-          ],
-        '#attached' => [ // Attach the library for pop-up dialogs/modals.
-          'library' => [ 'core/drupal.dialog.ajax' ],
-        ],
+        '#markup' => t('Add new or edit existing hotspots, using current pitch and yaw.'),
       ];
     }
     return $element;
@@ -120,5 +111,18 @@ class VRViewFormatter extends FormatterBase {
       }
     }
     return $hotspot_settings;
+  }
+
+  private function hotspotsLinks(EntityInterface $entity) {
+    $html = '';
+    $hotspots = $entity->field_vr_hotspots->referencedEntities();
+    foreach ($hotspots as $hotspot) {
+      if($vr_view = $hotspot->field_vr_view_target->entity) {
+        $hotspot_id = $hotspot->id->value;
+        $vr_view_name = $vr_view->title->value;
+        $html .= Link::fromTextAndUrl($vr_view_name, Url::fromUri("internal:/hotspot/edit/{$hotspot_id}/0/0", [ 'attributes' => ['id' => 'modal-button-edit', 'class' => ['modal-button-edit', 'use-ajax', 'button',] ]]))->toString();
+      }
+    }
+    return $html;
   }
 }

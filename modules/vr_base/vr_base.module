@@ -2,13 +2,25 @@
 
 use \Drupal\vr_base\VrBase;
 use \Drupal\Core\Form\FormStateInterface;
+use \Drupal\vr_base\Controller\ModalFormHotSpotController;
 
 function vr_base_form_vr_hotspot_base_hotspot_form_alter (&$form, FormStateInterface $form_state) {
-  if(VrBase::formIsAjax($form_state) && VrBase::formHasArgs($form_state)) {
-    $form['#prefix'] = '<div id="'.VrBase::formWrapper.'">';
-    $form['#suffix'] = '</div>';
-    $form['field_pitch']['widget'][0]['value']['#default_value'] = $form_state->get('pitch');
-    $form['field_yaw']['widget'][0]['value']['#default_value'] = $form_state->get('yaw');
-    $form['actions']['submit']['#ajax'] = [ 'callback' => '\Drupal\vr_base\Controller\ModalFormHotSpotController::formAjaxCallback'];
+  if(VrBase::formIsAjax($form_state)) {
+    if(VrBase::formAction($form_state) == ModalFormHotSpotController::$create && VrBase::formHasViewArgs($form_state)) {
+      $form['#prefix'] = '<div id="'.VrBase::formWrapper.'">';
+      $form['#suffix'] = '</div>';
+      $form['field_pitch']['widget'][0]['value']['#default_value'] = $form_state->get('pitch');
+      $form['field_yaw']['widget'][0]['value']['#default_value'] = $form_state->get('yaw');
+      $form['actions']['submit']['#ajax'] = [ 'callback' => '\Drupal\vr_base\Controller\ModalFormHotSpotController::formAjaxCallback'];
+    }
+    else if (VrBase::formAction($form_state) == ModalFormHotSpotController::$edit && VrBase::formHasHotspotArgs($form_state)) {
+      $form['#prefix'] = '<div id="'.VrBase::formWrapper.'">';
+      $form['#suffix'] = '</div>';
+      $form['field_pitch']['widget'][0]['value']['#description'] = $form['field_pitch']['widget'][0]['value']['#default_value'];
+      $form['field_pitch']['widget'][0]['value']['#default_value'] = $form_state->get('pitch');
+      $form['field_yaw']['widget'][0]['value']['#description'] = $form['field_yaw']['widget'][0]['value']['#default_value'];
+      $form['field_yaw']['widget'][0]['value']['#default_value'] = $form_state->get('yaw');
+      $form['actions']['submit']['#ajax'] = [ 'callback' => '\Drupal\vr_base\Controller\ModalFormHotSpotController::formAjaxCallback'];
+    }
   }
 }

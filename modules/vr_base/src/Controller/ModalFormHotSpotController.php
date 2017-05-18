@@ -31,6 +31,18 @@ class ModalFormHotSpotController extends ControllerBase {
    */
    protected $entityTypeManager;
 
+  /**
+   * Allowed actions in get request
+   * @var array
+   */
+   protected static $actionTypes = [ 'create', 'edit' ];
+   public static $create = 'create';
+   public static $edit = 'edit';
+
+   protected function isValidAction($action) {
+     return in_array($action, self::$actionTypes);
+   }
+
    /**
     * ModalFormHotSpotController constructor.
     * @param \Drupal\Core\Entity\EntityTypeManager $entity_type_manager
@@ -53,19 +65,31 @@ class ModalFormHotSpotController extends ControllerBase {
 
    /**
     * Initial ajax callback for hotspot form.
-    * @param $vr_view
+    * @param $action
+    * @param $vr_item
     * @param $yaw
     * @param $pitch
     * @return AjaxResponse
     * See more at: https://www.mediacurrent.com/blog/loading-and-rendering-modal-forms-drupal-8#sthash.a1xRiRVP.dpuf
     */
-  public function createHotSpotModalForm($vr_view, $yaw, $pitch) {
+  public function createHotSpotModalForm($action, $vr_item, $yaw, $pitch) {
     $response = new AjaxResponse();
-    $entityStorage = $this->entityTypeManager->getStorage(VrBase::entityTypeVRHotspot);
-    $entity = $entityStorage->create([ 'type' => VrBase::entityBundleBaseVRHotspot ]);
-    $additions = [ 'vr_view' => $vr_view, 'yaw' => $yaw, 'pitch' => $pitch, 'ajax' => TRUE ];
-    $modal_form = $this->entityFormBuilder->getForm($entity, $operation = 'default', $additions);
-    $response->addCommand(new OpenModalDialogCommand('New hotspot', $modal_form, [ 'width' => '800' ]));
+    if($this->isValidAction($action)) {
+      if($action == self::$create) {
+        $entityStorage = $this->entityTypeManager->getStorage(VrBase::entityTypeVRHotspot);
+        $entity = $entityStorage->create(['type' => VrBase::entityBundleBaseVRHotspot]);
+        $additions = ['action' => $action, 'vr_view' => $vr_item, 'yaw' => $yaw, 'pitch' => $pitch, 'ajax' => TRUE];
+        $modal_form = $this->entityFormBuilder->getForm($entity, $operation = 'default', $additions);
+        $response->addCommand(new OpenModalDialogCommand('New hotspot', $modal_form, ['width' => '800']));
+      }
+      else if ($action == self::$edit) {
+        $entityStorage = $this->entityTypeManager->getStorage(VrBase::entityTypeVRHotspot);
+        $entity = $entityStorage->load($vr_item);
+        $additions = ['action' => $action, 'yaw' => $yaw, 'pitch' => $pitch, 'ajax' => TRUE];
+        $modal_form = $this->entityFormBuilder->getForm($entity, $operation = 'default', $additions);
+        $response->addCommand(new OpenModalDialogCommand('Edit hotspot', $modal_form, ['width' => '800']));
+      }
+    }
     return $response;
   }
 

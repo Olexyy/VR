@@ -5,10 +5,10 @@ hotspots.form:
     _form: '\Drupal\vr_base\Form\HotSpotsForm'
   requirements:
     _permission: 'access content'
-hotspot.modal:
-  path: '/hotspot/{vr_view}/{yaw}/{pitch}'
+hotspot.modal.edit:
+  path: '/hotspot/{action}/{vr_item}/{yaw}/{pitch}'
   defaults:
-    _title: 'Hotspot'
+    _title: 'Edit hotspot'
     _controller: '\Drupal\vr_base\Controller\ModalFormHotSpotController::createHotSpotModalForm'
   requirements:
     _permission: 'access content'
