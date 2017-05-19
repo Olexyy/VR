@@ -97,7 +97,7 @@ class VRViewFormatter extends FormatterBase {
     $hotspots = $entity->field_vr_hotspots->referencedEntities();
     foreach ($hotspots as $hotspot) {
       if($vr_view = $hotspot->field_vr_view_target->entity) {
-        $vr_view_name = $vr_view->title->value.'_'.$vr_view->id->value;
+        $vr_view_name = $vr_view->title->value.'_'.$vr_view->id->value.'_'.$hotspot->title->value.'_'.$hotspot->id->value;
         $yaw = $hotspot->field_yaw->value;
         $pitch = $hotspot->field_pitch->value;
         $radius = $hotspot->field_radius->value;

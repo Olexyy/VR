@@ -111,11 +111,13 @@ class ModalFormHotSpotController extends ControllerBase {
       $response->addCommand(new HtmlCommand('#'.VrBase::formWrapper, $form));
     }
     else {
-      $storage = $this->entityTypeManager->getStorage('vr_view');
-      $parent_entity = $storage->load($form_state->get(VrBase::EntityTypeVRView));
-      $id = $form_state->getFormObject()->getEntity()->id->value;
-      $parent_entity->field_vr_hotspots[] = $id;
-      $parent_entity->save();
+      if(VrBase::formAction($form_state) == self::$create) {
+        $storage = \Drupal::entityTypeManager()->getStorage(VrBase::EntityTypeVRView);
+        $parent_entity = $storage->load($form_state->get(VrBase::EntityTypeVRView));
+        $id = $form_state->getFormObject()->getEntity()->id->value;
+        $parent_entity->field_vr_hotspots[] = $id;
+        $parent_entity->save();
+      }
       $http_referrer = \Drupal::request()->server->get('HTTP_REFERER');
       $response->addCommand(new RedirectCommand($http_referrer));
     }
