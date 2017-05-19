@@ -15,17 +15,14 @@
 var vrView;
 var startView;
 var startImage;
-var hotSpotsLink;
-var baseHotSpotsLink;
-var initialHotSpotsLink;
+var replacement;
 var views;
 
 function setSourceParams() {
     startImage = drupalSettings.vr_base.start_image;
     startView = drupalSettings.vr_base.start_view;
     views = drupalSettings.vr_base.views;
-    initialHotSpotsLink = document.getElementById('modal-button-create').getAttribute('href');
-    baseHotSpotsLink = initialHotSpotsLink.replace('/0/0', '');
+    replacement = '/0/0';
 }
 
 function onLoad() {
@@ -71,12 +68,14 @@ function loadScene(id) {
     // Add all the hotspots for the scene
     var sceneHotSpots = views[id]['hotspots'];
     for (var hotSpotKey in sceneHotSpots) {
-        vrView.addHotspot(hotSpotKey, {
-            pitch: sceneHotSpots[hotSpotKey]['pitch'],
-            yaw: sceneHotSpots[hotSpotKey]['yaw'],
-            radius: sceneHotSpots[hotSpotKey]['radius'],
-            distance: sceneHotSpots[hotSpotKey]['distance']
-        });
+        if(sceneHotSpots.hasOwnProperty(hotSpotKey)) {
+            vrView.addHotspot(hotSpotKey, {
+                pitch: sceneHotSpots[hotSpotKey]['pitch'],
+                yaw: sceneHotSpots[hotSpotKey]['yaw'],
+                radius: sceneHotSpots[hotSpotKey]['radius'],
+                distance: sceneHotSpots[hotSpotKey]['distance']
+            });
+        }
     }
 }
 
@@ -86,13 +85,16 @@ function onVRViewPosition(e) {
 	console.log('pitch:' + pitch + ', yaw'+ yaw);
 	document.getElementById('pitch-value').innerHTML = pitch.toString();
     document.getElementById('yaw-value').innerHTML = yaw.toString();
-    hotSpotsLink = baseHotSpotsLink + '/'+yaw.toString()+'/'+pitch.toString()+"?_wrapper_format=drupal_modal";
+    var newReplacement = '/'+yaw.toString()+'/'+pitch.toString();
     for(var i = 0; i < Drupal.ajax.instances.length; i++) {
         if(Drupal.ajax.instances[i].element.id === 'modal-button-create') {
-            Drupal.ajax.instances[i].options.url = hotSpotsLink;
-            alert(Drupal.ajax.instances[i].options.url);
+            Drupal.ajax.instances[i].options.url = Drupal.ajax.instances[i].options.url.replace(replacement, newReplacement);
+        }
+        else if(Drupal.ajax.instances[i].element.id === 'modal-button-edit') {
+            Drupal.ajax.instances[i].options.url = Drupal.ajax.instances[i].options.url.replace(replacement, newReplacement);
         }
     }
+    replacement = newReplacement;
 }
 
 function onModeChange(e) {

@@ -119,8 +119,10 @@ class VRViewFormatter extends FormatterBase {
     foreach ($hotspots as $hotspot) {
       if($vr_view = $hotspot->field_vr_view_target->entity) {
         $hotspot_id = $hotspot->id->value;
+        $hotspot_name = $hotspot->title->value;
         $vr_view_name = $vr_view->title->value;
-        $html .= Link::fromTextAndUrl($vr_view_name, Url::fromUri("internal:/hotspot/edit/{$hotspot_id}/0/0", [ 'attributes' => ['id' => 'modal-button-edit', 'class' => ['modal-button-edit', 'use-ajax', 'button',] ]]))->toString();
+        $name = $hotspot_name .'('. $vr_view_name .')';
+        $html .= Link::fromTextAndUrl($name, Url::fromUri("internal:/hotspot/edit/{$hotspot_id}/0/0", [ 'attributes' => ['id' => 'modal-button-edit', 'class' => ['modal-button-edit', 'use-ajax', 'button',] ]]))->toString();
       }
     }
     return $html;
